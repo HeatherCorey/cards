@@ -16,6 +16,12 @@ class FlashCardViewController: UIViewController {
     var model: FlashCardModel?
     fileprivate var currentVisibleSide = FlipSide.front
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.animateTable()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         deckTableView.delegate = self
@@ -101,12 +107,13 @@ extension FlashCardViewController {
         showCurrentCardImage()
     }
     
+//changed animation options for front and back
     @IBAction func flipItButtonPressed(_ sender: UIButton) {
         let animationOptions: UIViewAnimationOptions
         if self.currentVisibleSide == .front {
             animationOptions = [.curveLinear, .transitionFlipFromLeft]
         } else {
-            animationOptions = [.curveEaseInOut, .transitionFlipFromRight]
+            animationOptions = [.curveLinear, .transitionFlipFromRight]
         }
         
         UIView.transition(with: flipView, duration: 0.5, options: animationOptions, animations: {
@@ -149,6 +156,25 @@ extension FlashCardViewController: UITableViewDelegate {
         currentVisibleSide = FlipSide.front
         
         showCurrentCardImage()
+    }
+ 
+//    animated deckTableView
+    func animateTable() {
+        deckTableView.reloadData()
+        
+        let cells = deckTableView.visibleCells
+        let tableHeight: CGFloat = deckTableView.bounds.size.height
+        
+        var index = 0
+        
+        for cell in cells {
+            let cell: UITableViewCell = cell as UITableViewCell
+            UIView.animate(withDuration: 2, delay: 0.05 * Double(index), options: [], animations: {
+                cell.transform = CGAffineTransform(translationX: 0, y: -tableHeight)
+            }, completion: nil)
+        }
+        
+        index += 1
     }
 }
 
