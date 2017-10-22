@@ -5,6 +5,11 @@ class DeckSelectionViewController: UIViewController, UITableViewDataSource, UITa
     @IBOutlet weak var decksTableView: UITableView!
     var deckModel: DeckSelectionModel!
     let decksPersistence = DecksPersistence(decksURL: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("decks.json"))
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.animateTable()
+    }
     
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -33,6 +38,25 @@ class DeckSelectionViewController: UIViewController, UITableViewDataSource, UITa
         tableView.deselectRow(at: indexPath, animated: true)
         deckModel.deckSelected(at: indexPath.row)
         performSegue(withIdentifier: "showDeck", sender: nil)
+    }
+    
+//animation for decksTableView
+    func animateTable() {
+        decksTableView.reloadData()
+        
+        let cells = decksTableView.visibleCells
+        let tableHeight: CGFloat = decksTableView.bounds.size.height
+        
+        var index = 0
+        
+        for cell in cells {
+            let cell: UITableViewCell = cell as UITableViewCell
+            UIView.animate(withDuration: 2, delay: 0.05 * Double(index), options: [], animations: {
+                cell.transform = CGAffineTransform(translationX: 0, y: -tableHeight)
+            }, completion: nil)
+        }
+        
+        index += 1
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
